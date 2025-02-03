@@ -6,4 +6,10 @@
 
 # ignore results*.json files
 **/results*.json
-results*.json
+**/results_*/
+
+# ignore .DS_Store files
+**/.DS_Store
+
+# ignore .vscode files
+**/.vscode
