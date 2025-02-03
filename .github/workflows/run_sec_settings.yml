@@ -18,15 +18,17 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4.2.2
       
-    - name: List Directory Contents
+    - name: Copy candidate scripts to root directory
       run: |
-        ls -R
+        cp ./configs/combined-features/security-settings.json .
+        cp ./environments/prod/tsvi-solutions-env.json .
+        cp ./environments/prod/repo_data.json .
 
     - name: Newman Action
       uses: matt-ball/newman-action@v2.0.0
       with:
-        collection: "${{ github.workspace }}/configs/combined-features/security-settings.json"
-        environment: "${{ github.workspace }}/prod/tsvi-solutions-env.json"
-        iterationData: "${{ github.workspace }}/environments/prod/repo_data.json"
+        collection: security-settings.json
+        environment: tsvi-solutions-env.json
+        iterationData: repo_data.json
         reporters: cli,htmlextra,json
         envVar: GITHUB_TOKEN=${{ secrets.SECURITY_SETTINGS_TOKEN }}
