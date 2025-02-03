@@ -1,0 +1,28 @@
+name: Run Security Settings
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-security-settings:
+    runs-on: ubuntu-latest
+    environment:
+      name: PROD
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Newman Action
+      uses: matt-ball/newman-action@v2.0.0
+      with:
+        collection: configs/combined-features/security-settings.json
+        environment: environments/prod/tsvi-solutions-env.json
+        iterationData: environments/prod/repo_data.json
+        reporters: cli,htmlextra,json
+        envVar: GITHUB_TOKEN=${{ secrets.SECURITY_SETTINGS_TOKEN }}

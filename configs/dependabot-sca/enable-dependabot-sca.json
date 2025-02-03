@@ -1,0 +1,96 @@
+{
+  "info": {
+    "name": "GitHub Dependabot-SCA Configuration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Enable Vulnerability Alerts",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "pm.test(\"Response time is less than 500ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});",
+              "pm.test(\"Headers are correct\", function() {",
+              "    pm.response.to.have.header('X-GitHub-Media-Type');",
+              "    pm.response.to.have.header('X-RateLimit-Limit');",
+              "});",
+              "pm.test(\"Rate limit is not exceeded\", function() {",
+              "    var limit = pm.response.headers.get('X-RateLimit-Remaining');",
+              "    pm.expect(parseInt(limit)).to.be.above(0);",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const repoName = pm.iterationData.get('repo_name');",
+              "console.log(`Enabling Vulnerability Alerts for: ${repoName}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{GITHUB_TOKEN}}"
+          },
+          {
+            "key": "X-GitHub-Api-Version",
+            "value": "2022-11-28"
+          }
+        ],
+        "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/vulnerability-alerts"
+      }
+    },
+    {
+      "name": "Enable Dependabot Security Updates",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const repoName = pm.iterationData.get('repo_name');",
+              "console.log(`Enabling Dependabot Updates for: ${repoName}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{GITHUB_TOKEN}}"
+          },
+          {
+            "key": "X-GitHub-Api-Version",
+            "value": "2022-11-28"
+          }
+        ],
+        "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/automated-security-fixes"
+      }
+    }
+  ]
+}

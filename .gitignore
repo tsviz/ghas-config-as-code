@@ -1,0 +1,9 @@
+# ignore all shell scripts
+*.sh
+
+# ignore the security-settings_reset.json config file - for dev use only
+**/security-settings_reset.json
+
+# ignore results*.json files
+**/results*.json
+results*.json

@@ -1,0 +1,11 @@
+{
+  "id": "github-env",
+  "name": "GitHub Environment - Organization Name",
+  "values": [
+    {
+      "key": "ORG_NAME",
+      "value": "tsvi-solutions-sanbox",
+      "enabled": true
+    }
+  ]
+}

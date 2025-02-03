@@ -1,0 +1,326 @@
+{
+  "info": {
+    "name": "GitHub Security Settings",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Secret Scanning Settings",
+      "item": [
+        {
+          "name": "Enable Secret Scanning",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response time is less than 1000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"Secret scanning is enabled\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.security_and_analysis.secret_scanning.status).to.eql(\"enabled\");",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const repoName = pm.iterationData.get('repo_name');",
+                  "console.log(`Configuring Secret Scanning for: ${repoName}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.github+json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{GITHUB_TOKEN}}"
+              },
+              {
+                "key": "X-GitHub-Api-Version",
+                "value": "2022-11-28"
+              }
+            ],
+            "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"security_and_analysis\":{\"secret_scanning\":{\"status\":\"enabled\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Enable Push Protection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response time is less than 1000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});",
+                  "pm.test(\"Push protection is enabled\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.security_and_analysis.secret_scanning_push_protection.status).to.eql(\"enabled\");",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const repoName = pm.iterationData.get('repo_name');",
+                  "console.log(`Configuring Push Protection for: ${repoName}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.github+json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{GITHUB_TOKEN}}"
+              },
+              {
+                "key": "X-GitHub-Api-Version",
+                "value": "2022-11-28"
+              }
+            ],
+            "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"security_and_analysis\":{\"secret_scanning_push_protection\":{\"status\":\"enabled\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Dependabot Settings",
+      "item": [
+        {
+          "name": "Enable Vulnerability Alerts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "pm.test(\"Headers are correct\", function() {",
+                  "    pm.response.to.have.header('X-GitHub-Media-Type');",
+                  "    pm.response.to.have.header('X-RateLimit-Limit');",
+                  "});",
+                  "pm.test(\"Rate limit is not exceeded\", function() {",
+                  "    var limit = pm.response.headers.get('X-RateLimit-Remaining');",
+                  "    pm.expect(parseInt(limit)).to.be.above(0);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const repoName = pm.iterationData.get('repo_name');",
+                  "console.log(`Enabling Vulnerability Alerts for: ${repoName}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.github+json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{GITHUB_TOKEN}}"
+              },
+              {
+                "key": "X-GitHub-Api-Version",
+                "value": "2022-11-28"
+              }
+            ],
+            "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/vulnerability-alerts"
+          }
+        },
+        {
+          "name": "Enable Dependabot Security Updates",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const repoName = pm.iterationData.get('repo_name');",
+                  "console.log(`Enabling Dependabot Updates for: ${repoName}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.github+json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{GITHUB_TOKEN}}"
+              },
+              {
+                "key": "X-GitHub-Api-Version",
+                "value": "2022-11-28"
+              }
+            ],
+            "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/automated-security-fixes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Code Scanning Settings",
+      "item": [
+        {
+          "name": "Enable Default Setup for CodeQL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 202 (Accepted)\", function () {",
+                  "    pm.response.to.have.status(202);",
+                  "});",
+                  "pm.test(\"Response time is less than 4000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});",
+                  "pm.test(\"CodeQL setup initiated\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    console.log('Response:', JSON.stringify(jsonData, null, 2));",
+                  "    pm.expect(jsonData).to.have.property('run_id');",
+                  "    pm.expect(jsonData.run_id).to.be.a('number');",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const repoName = pm.iterationData.get('repo_name');",
+                  "console.log(`Configuring CodeQL for: ${repoName}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.github+json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{GITHUB_TOKEN}}"
+              },
+              {
+                "key": "X-GitHub-Api-Version",
+                "value": "2022-11-28"
+              }
+            ],
+            "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/code-scanning/default-setup",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"state\":\"configured\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Private Vulnerability Reporting",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const repoName = pm.iterationData.get('repo_name');",
+              "console.log(`Enabling Private Vulnerability Reporting for: ${repoName}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{GITHUB_TOKEN}}"
+          },
+          {
+            "key": "X-GitHub-Api-Version",
+            "value": "2022-11-28"
+          }
+        ],
+        "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/private-vulnerability-reporting"
+      }
+    }
+  ]
+}

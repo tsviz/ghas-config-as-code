@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "GitHub Code Scanning Configuration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Enable Default Setup for CodeQL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 202 (Accepted)\", function () {",
+              "    pm.response.to.have.status(202);",
+              "});",
+              "pm.test(\"Response time is less than 4000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+              "});",
+              "pm.test(\"CodeQL setup initiated\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    console.log('Response:', JSON.stringify(jsonData, null, 2));",
+              "    pm.expect(jsonData).to.have.property('run_id');",
+              "    pm.expect(jsonData.run_id).to.be.a('number');",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const repoName = pm.iterationData.get('repo_name');",
+              "console.log(`Configuring CodeQL for: ${repoName}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{GITHUB_TOKEN}}"
+          },
+          {
+            "key": "X-GitHub-Api-Version",
+            "value": "2022-11-28"
+          }
+        ],
+        "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}/code-scanning/default-setup",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"state\":\"configured\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

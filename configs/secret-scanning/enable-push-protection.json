@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "GitHub Push Protection Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Enable Push Protection",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response time is less than 1000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "pm.test(\"Push protection is enabled\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.security_and_analysis.secret_scanning_push_protection.status).to.eql(\"enabled\");",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const repoName = pm.iterationData.get('repo_name');",
+              "console.log(`Configuring Push Protection for: ${repoName}`);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{GITHUB_TOKEN}}"
+          },
+          {
+            "key": "X-GitHub-Api-Version",
+            "value": "2022-11-28"
+          }
+        ],
+        "url": "https://api.github.com/repos/{{ORG_NAME}}/{{repo_name}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"security_and_analysis\":{\"secret_scanning_push_protection\":{\"status\":\"enabled\"}}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
