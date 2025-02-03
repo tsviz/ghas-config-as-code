@@ -18,12 +18,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4.2.2
 
-    - name: Debug Files
-      run: |
-        cat configs/combined-features/security-settings.json
-        cat environments/prod/tsvi-solutions-env.json
-        cat environments/prod/repo_data.json
-
     - name: Newman Action
       uses: matt-ball/newman-action@v2.0.0
       with:
