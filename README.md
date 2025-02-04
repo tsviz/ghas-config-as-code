@@ -1,4 +1,4 @@
-# ghas-config-as-code - GitHub Advanced Security Configuration as Code
+# GitHub Advanced Security Configuration as Code
 
 ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=postman&logoColor=white)
